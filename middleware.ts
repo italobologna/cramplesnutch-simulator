@@ -1,4 +1,3 @@
-export const messagingMiddleware = (async (ctx : any, next : () => Promise<void>) => {
+export const messagingMiddleware = (async (ctx : any) => {
     ctx;
-    next;
 });
