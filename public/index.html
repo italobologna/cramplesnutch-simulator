@@ -53,6 +53,8 @@
     vuetify: new Vuetify(),
     data() {
       return {
+        routeMap: {},
+        deletingRoute: undefined,
         route: '',
         tcpUrl: '',
         reqHttp: '',
@@ -60,6 +62,11 @@
         reqTcp: '',
         resTcp: '',
       };
+    },
+    computed: {
+      hasDeleteRoute() {
+        return this.deletingRoute !== undefined
+      }
     },
     methods: {
       sendDataToBackend() {
@@ -73,17 +80,78 @@
             reqTcp: this.reqTcp,
             resTcp: this.resTcp
           })
-        }).then(res => console.log(res));
+        })
+            .then(res => res.json())
+            .then(data => this.routeMap = data);
+      },
+      deleteRoute(routeObj) {
+        fetch(`http://localhost:4000/api/${routeObj.route}`, {
+          method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => this.routeMap = data)
+            .then(() => this.deletingRoute = undefined)
+            .catch(err => console.err(err));
       }
     },
+    created() {
+      fetch('http://localhost:4000/api')
+          .then(res => res.json())
+          .then(data => this.routeMap = data);
+    },
     template: `
-      <v-app id="sandbox">
+      <v-app id="simulator">
+
+      <v-dialog v-if="hasDeleteRoute" v-model="hasDeleteRoute" max-width="290">
+        <v-card>
+          <v-card-title class="headline">Delete route '{{ deletingRoute.route }}'</v-card-title>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+                color="green darken-1"
+                text
+                @click="deletingRoute = undefined">
+              Disagree
+            </v-btn>
+
+            <v-btn
+                color="green darken-1"
+                text
+                @click="deleteRoute(deletingRoute)">
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
       <v-navigation-drawer
           :clipped="true"
           :permanent="true"
           app
           overflow>
-        dadsa
+        <v-list rounded>
+          <v-subheader>ROUTES</v-subheader>
+          <v-list-item-group>
+            <v-list-item v-for="(routeData, routeName) in routeMap"
+                         :key="routeName">
+              <v-list-item-content>
+                <v-list-item-title v-text="routeName"></v-list-item-title>
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <v-btn icon>
+                  <v-icon color="red lighten-1"
+                          @click.stop="deletingRoute = routeData">
+                    mdi-delete
+                  </v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
       </v-navigation-drawer>
 
       <v-app-bar
@@ -97,11 +165,13 @@
           <v-row justify="center">
             <v-col cols="4">
               <v-text-field v-model="route"
+                            :hint="'/path'"
                             :label="'HTTP Route:'"/>
             </v-col>
             <v-col cols="1"/>
             <v-col cols="4">
               <v-text-field v-model="tcpUrl"
+                            :hint="'server:port'"
                             :label="'TCP URL:'"/>
             </v-col>
           </v-row>
@@ -126,7 +196,7 @@
                           clearable/>
             </v-col>
           </v-row>
-          <v-row justify="center">
+          <v-row align="center" justify="center">
             <v-col cols="3">
               <div class="http-side message-image">
                 <img src="assets/arrows.jpg" alt="" width="100%">
@@ -143,7 +213,7 @@
               </div>
             </v-col>
           </v-row>
-          <v-row justify="center">
+          <v-row align="center" justify="center">
             <v-col cols="3">
               <v-textarea id="res-http"
                           v-model="resHttp"
