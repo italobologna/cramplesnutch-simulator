@@ -66,6 +66,8 @@
         fetch('http://localhost:4000/api', {
           method: 'POST',
           body: JSON.stringify({
+            route: this.route,
+            tcpUrl: this.tcpUrl,
             reqHttp: this.reqHttp,
             resHttp: this.resHttp,
             reqTcp: this.reqTcp,
@@ -94,7 +96,15 @@
         <v-container fluid>
           <v-row justify="center">
             <v-col cols="9">
-              <v-text-field></v-text-field>
+              <v-text-field v-model="route"
+                            :label="'HTTP Route:'"/>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="9">
+              <v-text-field v-model="tcpUrl"
+                            dense
+                            :label="'TCP URL:'"/>
             </v-col>
           </v-row>
           <v-row justify="center">
