@@ -1,1 +1,1 @@
-deno run --allow-net --allow-{run,read} app.ts
+o run --allow-net --allow-env --allow-run --allow-read app.ts
