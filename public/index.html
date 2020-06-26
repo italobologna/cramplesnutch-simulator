@@ -7,86 +7,88 @@
   <title>Hello World!</title>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <style>
-    body, html {
-      width: 100%;
-      height: 100%;
-    }
+      body, html {
+          width: 100%;
+          height: 100%;
+      }
+      
+      textarea {
+          resize: none;
+      }
 
-    .centralized {
-      margin: 5em auto;
-      width: 80%;
-      height: 80%;
-      display: grid;
-      grid-template-rows: 1fr 1fr 1fr;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
+      .centralized {
+          margin: 5em auto;
+          width: 80%;
+          height: 80%;
+          display: grid;
+          grid-template-rows: 1fr 1fr 1fr;
+          grid-template-columns: 1fr 1fr 1fr;
+      }
 
-    .text-area {
-      width: 95%;
-      height: 80%;
-    }
+      .text-area {
+          width: 95%;
+          height: 80%;
+      }
 
-    .simulator-box {
-      border: black 1px solid;
-      font-size: 3em;
-      margin: 0.5em;
-    }
+      .simulator-box {
+          border: black 1px solid;
+          font-size: 3em;
+          margin: 0.5em;
+      }
 
-    .center-content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+      .center-content {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
 
-    button {
-      padding: 1em;
-    }
+      button {
+          padding: 1em;
+      }
   </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
-  new Vue({
-    el: `#app`,
-    data() {
-      return {
-        reqHttp: '',
-        resHttp: '',
-        reqTcp: '',
-        resTcp: '',
-      };
-    },
-    methods: {
-      sendDataToBackend() {
-        fetch('http://localhost:4000/api', {
-          method: 'POST',
-          body: JSON.stringify({
-            reqHttp: this.reqHttp,
-            resHttp: this.resHttp,
-            reqTcp: this.reqTcp,
-            resTcp: this.resTcp
-          })
-        }).then(res => console.log(res));
-      }
-    },
-    template: `
+    new Vue({
+        el: `#app`,
+        data() {
+            return {
+                reqHttp: '',
+                resHttp: '',
+                reqTcp: '',
+                resTcp: '',
+            };
+        },
+        methods: {
+            sendDataToBackend() {
+                fetch('http://localhost:4000/api', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        reqHttp: this.reqHttp,
+                        resHttp: this.resHttp,
+                        reqTcp: this.reqTcp,
+                        resTcp: this.resTcp
+                    })
+                }).then(res => console.log(res));
+            }
+        },
+        template: `
       <div class="centralized">
 
       <div class="req-http">
         <label for="httpReq">1. HTTP Request:</label>
-        <input id="httpReq"
-               type="textarea"
+        <textarea id="httpReq"
                class="text-area"
                v-model="reqHttp"
-               readonly>
+               readonly/>
       </div>
       <div></div>
       <div class="req-tcp">
         <label for="req-tcp">2. TCP Request:</label>
-        <input id="req-tcp"
-               type="textarea"
+        <textarea id="req-tcp"
                class="text-area"
-               v-model="reqTcp">
+               v-model="reqTcp"/>
       </div>
 
       <div class="http-side message-image">
@@ -103,25 +105,23 @@
 
       <div class="res-http">
         <label for="httpReq">4. HTTP Response:</label>
-        <input id="httpReq"
-               type="textarea"
+        <textarea id="httpReq"
                class="text-area"
-               v-model="resHttp">
+               v-model="resHttp"/>
       </div>
       <div class="center-content">
         <button v-on:click="sendDataToBackend">SAVE</button>
       </div>
       <div class="res-tcp">
         <label for="req-tcp">3. TCP Response:</label>
-        <input id="req-tcp"
-               type="textarea"
+        <textarea id="req-tcp"
                class="text-area"
                v-model="resTcp"
-               readonly>
+               readonly/>
       </div>
       </div>
     `
-  });
+    });
 </script>
 </body>
 </html>
