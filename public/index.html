@@ -11,37 +11,38 @@
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <style>
-      body, html {
-          width: 100%;
-          height: 100%;
-      }
+    body, html {
+      width: 100%;
+      height: 100%;
+    }
 
-      textarea {
-          resize: none;
-      }
+    textarea {
+      resize: none;
+    }
 
-      .centralized {
-          margin: 5em auto;
-          width: 80%;
-          height: 80%;
-          display: grid;
-          grid-template-rows: 1fr 1fr 1fr;
-          grid-template-columns: 1fr 1fr 1fr;
-      }
+    .centralized {
+      margin: 5em auto;
+      width: 80%;
+      height: 80%;
+      display: grid;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
 
-      .simulator-box {
-        margin: 1em;
-      }
+    .simulator-box {
+      margin: 1em;
+      height: 80%;
+    }
 
-      .center-content {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-      }
+    .center-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-      button {
-          padding: 1em;
-      }
+    button {
+      padding: 1em;
+    }
   </style>
 </head>
 <body>
@@ -52,6 +53,8 @@
     vuetify: new Vuetify(),
     data() {
       return {
+        route: '',
+        tcpUrl: '',
         reqHttp: '',
         resHttp: '',
         reqTcp: '',
@@ -72,77 +75,93 @@
       }
     },
     template: `
-<v-app id="sandbox">
-  <v-navigation-drawer
-    :clipped="true"
-    :permanent="true"
-    app
-    overflow>
-    dadsa
-  </v-navigation-drawer>
-  
-  <v-app-bar
-    :clipped-left="true"
-    app>
-    <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
-  </v-app-bar>
+      <v-app id="sandbox">
+      <v-navigation-drawer
+          :clipped="true"
+          :permanent="true"
+          app
+          overflow>
+        dadsa
+      </v-navigation-drawer>
 
-  <v-main>
-    <v-container fluid>
-      <div class="centralized">
-        <div class="req-http">
-          <v-textarea id="http-req"
-              v-model="reqHttp"
-              :label="'1. HTTP Request:'"
-              :placeholder="' '"
-              outlined
-              clearable
-              readonly/>
-        </div>
-        <div></div>
-        <div class="req-tcp">
-          <v-textarea id="req-tcp"
-              v-model="reqTcp"
-              :label="'2. TCP Request:'"
-              :placeholder="' '"
-              outlined
-              clearable/>
-        </div>
-  
-        <div class="http-side message-image">
-          <img src="assets/arrows.jpg" alt="" width="100%">
-        </div>
-        <div class="simulator-box center-content elevation-4">
-          <h3>SIMULATOR</h3>
-        </div>
-        <div class="tcp-side message-image">
-          <img src="assets/arrows.jpg" alt="" width="100%">
-        </div>
-  
-        <div class="res-http">
-          <v-textarea id="res-http"
-              v-model="resHttp"
-              :label="'4. HTTP Response:'"
-              :placeholder="' '"
-              outlined
-              clearable/>
-        </div>
-        <div class="center-content">
-          <v-btn v-on:click="sendDataToBackend">SAVE</v-btn>
-        </div>
-        <div class="res-tcp">
-          <v-textarea id="res-tcp"
-              v-model="resTcp"
-              :label="'3. TCP Response:'"
-              :placeholder="' '"
-              outlined
-              clearable
-              readonly/>
-        </div>
-    </div>
-    </v-container>
-  </v-main>
-</v-app>
+      <v-app-bar
+          :clipped-left="true"
+          app>
+        <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
+      </v-app-bar>
+
+      <v-main>
+        <v-container fluid>
+          <v-row justify="center">
+            <v-col cols="9">
+              <v-text-field></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="3">
+              <v-textarea id="http-req"
+                          v-model="reqHttp"
+                          :label="'1. HTTP Request:'"
+                          :placeholder="' '"
+                          outlined
+                          clearable
+                          readonly/>
+            </v-col>
+            <v-col cols="3">
+            </v-col>
+            <v-col cols="3">
+              <v-textarea id="req-tcp"
+                          v-model="reqTcp"
+                          :label="'2. TCP Request:'"
+                          :placeholder="' '"
+                          outlined
+                          clearable/>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="3">
+              <div class="http-side message-image">
+                <img src="assets/arrows.jpg" alt="" width="100%">
+              </div>
+            </v-col>
+            <v-col cols="3">
+              <div class="simulator-box center-content elevation-4">
+                <h3>SIMULATOR</h3>
+              </div>
+            </v-col>
+            <v-col cols="3">
+              <div class="http-side message-image">
+                <img src="assets/arrows.jpg" alt="" width="100%">
+              </div>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="3">
+              <v-textarea id="res-http"
+                          v-model="resHttp"
+                          :label="'4. HTTP Response:'"
+                          :placeholder="' '"
+                          outlined
+                          clearable/>
+            </v-col>
+            <v-col cols="3">
+              <div class="center-content">
+                <v-btn v-on:click="sendDataToBackend">SAVE</v-btn>
+              </div>
+            </v-col>
+            <v-col cols="3">
+              <v-textarea id="res-tcp"
+                          v-model="resTcp"
+                          :label="'3. TCP Response:'"
+                          :placeholder="' '"
+                          outlined
+                          clearable
+                          readonly/>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+      </v-app>
     `
   });
 </script>
