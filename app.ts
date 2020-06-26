@@ -1,5 +1,5 @@
 import {Application, Router, send} from "https://deno.land/x/oak/mod.ts";
-import {getData, postData} from "./routes.ts";
+import {getData, postData} from "./apiRoutes.ts";
 import {messagingMiddleware} from "./middleware.ts";
 
 const env = Deno.env.toObject();
