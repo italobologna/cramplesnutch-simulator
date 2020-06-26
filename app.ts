@@ -1,5 +1,5 @@
 import {Application, Router, send} from "https://deno.land/x/oak/mod.ts";
-import {getData, postData} from "./routes.ts";
+import {getData, postData} from "./apiRoutes.ts";
 import {messagingMiddleware} from "./middleware.ts";
 
 const env = Deno.env.toObject();
@@ -15,19 +15,17 @@ const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-const applicationUrls = ['\/', '', '^\/assets\/.+', '\/api']
-let unlessApplication = async (middleware : any) : Promise<(ctx: any, next: any) => Promise<any>> => {
+const applicationUrls = [/^\/$/, /^\/api/, /^\/assets\//]
+let unlessApplication = async (interceptor : any) : Promise<(ctx: any, next: any) => Promise<any>> => {
   return async (ctx : any, next : () => Promise<void>) => {
-    console.log(ctx.request.url)
-    if (applicationUrls.some((url => new RegExp(ctx.request.url.pathname).test(url)))) {
-      console.log('Match')
+    if (applicationUrls.some(path => new RegExp(path).test(ctx.request.url.pathname))) {
       await next();
       return;
     } else {
-      return middleware;
+      return await interceptor(ctx);
     }
   }
-}
+};
 
 app.use(await unlessApplication(messagingMiddleware));
 
