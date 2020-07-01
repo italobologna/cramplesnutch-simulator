@@ -1,8 +1,18 @@
 import {helpers} from 'https://deno.land/x/oak/mod.ts'
 
-export let routes: any = [];
+export const routes: any = [];
+export const messageHistoryQueue: any = [];
 
-export const getRoute = ({response}: { response: any }) => {
+export const getHistory = ({response} : {response: any}) => {
+  let messages: any = [];
+  while (messageHistoryQueue.length > 0) {
+    messages.push(messageHistoryQueue.pop());
+  }
+  response.body = JSON.stringify(messages);
+  response.status = 200;
+};
+
+export const getRoutes = ({response}: { response: any }) => {
   response.body = JSON.stringify(routes);
   response.status = 200;
 };

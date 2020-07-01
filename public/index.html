@@ -49,6 +49,9 @@
         routes: {},
         deletingRoute: undefined,
         selectedRoute: undefined,
+        historyMsgs: [],
+        fetchRoutine: undefined,
+        readOnly: true,
         form: {
           httpPath: '',
           httpMethod: '',
@@ -64,11 +67,16 @@
     computed: {
       hasDeleteRoute() {
         return this.deletingRoute !== undefined
+      },
+      formatInstant() {
+        return (message) => {
+          return new Date(message.instant).toLocaleTimeString();
+        }
       }
     },
     methods: {
       sendDataToBackend() {
-        fetch('http://localhost:4000/api', {
+        fetch('/api', {
           method: 'POST',
           body: JSON.stringify({
             httpPath: this.form.httpPath,
@@ -85,7 +93,7 @@
             .then(data => this.routes = data);
       },
       deleteRoute(routeObj) {
-        fetch(`http://localhost:4000/api?httpPath=${routeObj.httpPath}&httpMethod=${routeObj.httpMethod}`, {
+        fetch(`/api?httpPath=${routeObj.httpPath}&httpMethod=${routeObj.httpMethod}`, {
           method: 'DELETE'
         })
             .then(res => res.json())
@@ -94,7 +102,8 @@
             .catch(err => console.error(err));
       },
       newRoute() {
-        this.$refs.form.reset()
+        this.readOnly = false;
+        this.$refs.form.reset();
         this.form.httpPath = '';
         this.form.httpMethod = '';
         this.form.tcpUrl = '';
@@ -105,23 +114,49 @@
         this.form.resTcp = '';
       },
       selectRoute(routeData) {
-        this.form.httpPath = routeData.httpPath;
-        this.form.httpMethod = routeData.httpMethod;
-        this.form.tcpUrl = routeData.tcpUrl;
-        this.form.tcpPort = routeData.tcpPort;
-        this.form.reqHttp = routeData.reqHttp;
-        this.form.resHttp = routeData.resHttp
-        this.form.reqTcp = routeData.reqTcp;
-        this.form.resTcp = routeData.resTcp;
+        this.readOnly = false;
+        this.fillForm(routeData);
+      },
+      fillForm(message) {
+        this.$refs.form.resetValidation();
+        this.form.httpPath = message.httpPath;
+        this.form.httpMethod = message.httpMethod;
+        this.form.tcpUrl = message.tcpUrl;
+        this.form.tcpPort = message.tcpPort;
+        this.form.reqHttp = message.reqHttp;
+        this.form.resHttp = message.resHttp
+        this.form.reqTcp = message.reqTcp;
+        this.form.resTcp = message.resTcp;
+      },
+      selectHistory(message) {
+        this.readOnly = true;
+        console.log(message);
+        this.fillForm(message);
+        console.log('form', this.form);
+      },
+      updateHistoryMessages() {
+        fetch('/api/history')
+            .then(res => res.json())
+            .then(data => {
+              if (Array.isArray(data) && data.length > 0) {
+                this.historyMsgs = [...data, ...this.historyMsgs];
+              }
+            })
+            .catch(err => console.error(err));
       }
     },
     created() {
-      fetch('http://localhost:4000/api')
+      fetch('/api')
           .then(res => res.json())
           .then(data => this.routes = data);
+      this.fetchRoutine = setInterval(this.updateHistoryMessages, 2500);
     },
     mounted() {
+      this.newRoute();
       this.form.httpMethod = this.httpMethods[0];
+    },
+    beforeDestroy() {
+      clearInterval(this.fetchRoutine);
     },
     template: `
       <v-app id="simulator">
@@ -150,6 +185,11 @@
         </v-card>
       </v-dialog>
 
+      <v-app-bar :clipped-left="true"
+                 app>
+        <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
+      </v-app-bar>
+      
       <v-navigation-drawer
           :clipped="true"
           :permanent="true"
@@ -158,8 +198,8 @@
         <v-list rounded>
           <v-subheader>ROUTES</v-subheader>
           <v-list-item-group>
-            <v-list-item v-for="(routeData) in routes"
-                         :key="routeData.httpPath + '-' + routeData.httpMethod" 
+            <v-list-item v-for="(routeData, index) in routes"
+                         :key="index"
                          v-on:click.stop="selectRoute(routeData)">
               <v-list-item-content>
                 <v-list-item-title v-text="routeData.httpPath + ':' + routeData.httpMethod"></v-list-item-title>
@@ -189,14 +229,25 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-app-bar :clipped-left="true"
-                 app>
-        <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
-      </v-app-bar>
+      <v-navigation-drawer permanent right overflow app>
+        <v-list rounded>
+          <v-subheader>HISTORY</v-subheader>
+          <v-list-item-group>
+            <v-list-item v-for="(message) in historyMsgs"
+                         :key="message.instant"
+                         v-on:click.stop="selectHistory(message)">
+              <v-list-item-content>
+                <v-list-item-title v-text="formatInstant(message)"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-navigation-drawer>
 
       <v-main>
         <v-container fluid>
-          <v-form ref="form">
+          <v-form ref="form"
+                  v-bind:disabled="readOnly">
             <v-row justify="center">
               <v-col cols="4">
                 <v-row justify="center">
@@ -221,14 +272,12 @@
                   <v-text-field v-model="form.tcpUrl"
                                 :hint="'server'"
                                 :label="'TCP URL:'"
-                                :rules="[v => !!v || 'TCP URL is required']"
                                 required/>
                 </v-row>
                 <v-row justify="center">
                   <v-text-field v-model="form.tcpPort"
                                 :hint="'port'"
                                 :label="'TCP Port:'"
-                                :rules="[v => !!v || 'TCP port is required']"
                                 required/>
                 </v-row>
               </v-col>

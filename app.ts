@@ -1,5 +1,5 @@
 import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
-import { deleteRoute, getRoute, postRoute } from "./apiRoutes.ts";
+import {deleteRoute, getHistory, getRoutes, postRoute} from "./apiRoutes.ts";
 import { messagingMiddleware } from "./middleware.ts";
 
 const env = Deno.env.toObject();
@@ -8,9 +8,10 @@ const HOST = env.HOST || "127.0.0.1";
 
 const router = new Router();
 
-router.get("/api", getRoute);
+router.get("/api", getRoutes);
 router.post("/api", postRoute);
 router.delete("/api", deleteRoute);
+router.get("/api/history", getHistory);
 
 const app = new Application();
 app.use(router.routes());
