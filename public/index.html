@@ -48,19 +48,25 @@
 <body>
 <div id="app"></div>
 <script>
+
   new Vue({
     el: `#app`,
     vuetify: new Vuetify(),
     data() {
       return {
-        routeMap: {},
+        httpMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+        routes: {},
         deletingRoute: undefined,
-        route: '',
-        tcpUrl: '',
-        reqHttp: '',
-        resHttp: '',
-        reqTcp: '',
-        resTcp: '',
+        form: {
+          httpPath: '',
+          httpMethod: '',
+          tcpUrl: '',
+          reqHttp: '',
+          resHttp: '',
+          reqTcp: '',
+          resTcp: '',
+        }
+
       };
     },
     computed: {
@@ -73,31 +79,34 @@
         fetch('http://localhost:4000/api', {
           method: 'POST',
           body: JSON.stringify({
-            route: this.route,
-            tcpUrl: this.tcpUrl,
-            reqHttp: this.reqHttp,
-            resHttp: this.resHttp,
-            reqTcp: this.reqTcp,
-            resTcp: this.resTcp
+            httpPath: this.form.httpPath,
+            httpMethod: this.form.httpMethod,
+            tcpUrl: this.form.tcpUrl,
+            reqHttp: this.form.reqHttp,
+            resHttp: this.form.resHttp,
+            reqTcp: this.form.reqTcp,
+            resTcp: this.form.resTcp
           })
         })
             .then(res => res.json())
-            .then(data => this.routeMap = data);
+            .then(data => this.routes = data);
       },
       deleteRoute(routeObj) {
-        fetch(`http://localhost:4000/api/${routeObj.route}`, {
+        fetch(`http://localhost:4000/api?httpPath=${routeObj.httpPath}&httpMethod=${routeObj.httpMethod}`, {
           method: 'DELETE'
         })
             .then(res => res.json())
-            .then(data => this.routeMap = data)
+            .then(data => this.routes = data)
             .then(() => this.deletingRoute = undefined)
-            .catch(err => console.err(err));
+            .catch(err => console.error(err));
       }
     },
     created() {
       fetch('http://localhost:4000/api')
           .then(res => res.json())
-          .then(data => this.routeMap = data);
+          .then(data => this.routes = data);
+console.log(this.routes);
+      this.httpMethod = this.httpMethods[0];
     },
     template: `
       <v-app id="simulator">
@@ -126,7 +135,6 @@
         </v-card>
       </v-dialog>
 
-
       <v-navigation-drawer
           :clipped="true"
           :permanent="true"
@@ -135,10 +143,10 @@
         <v-list rounded>
           <v-subheader>ROUTES</v-subheader>
           <v-list-item-group>
-            <v-list-item v-for="(routeData, routeName) in routeMap"
-                         :key="routeName">
+            <v-list-item v-for="(routeData) in routes"
+                         :key="routeData.httpPath + '-' + routeData.httpMethod">
               <v-list-item-content>
-                <v-list-item-title v-text="routeName"></v-list-item-title>
+                <v-list-item-title v-text="routeData.httpPath + ':' + routeData.httpMethod"></v-list-item-title>
               </v-list-item-content>
 
               <v-list-item-action>
@@ -154,89 +162,104 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-app-bar
-          :clipped-left="true"
-          app>
+      <v-app-bar :clipped-left="true"
+                 app>
         <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
       </v-app-bar>
 
       <v-main>
         <v-container fluid>
-          <v-row justify="center">
-            <v-col cols="4">
-              <v-text-field v-model="route"
-                            :hint="'/path'"
-                            :label="'HTTP Route:'"/>
-            </v-col>
-            <v-col cols="1"/>
-            <v-col cols="4">
-              <v-text-field v-model="tcpUrl"
-                            :hint="'server:port'"
-                            :label="'TCP URL:'"/>
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="3">
-              <v-textarea id="http-req"
-                          v-model="reqHttp"
-                          :label="'1. HTTP Request:'"
-                          :placeholder="' '"
-                          outlined
-                          clearable
-                          readonly/>
-            </v-col>
-            <v-col cols="3">
-            </v-col>
-            <v-col cols="3">
-              <v-textarea id="req-tcp"
-                          v-model="reqTcp"
-                          :label="'2. TCP Request:'"
-                          :placeholder="' '"
-                          outlined
-                          clearable/>
-            </v-col>
-          </v-row>
-          <v-row align="center" justify="center">
-            <v-col cols="3">
-              <div class="http-side message-image">
-                <img src="assets/arrows.jpg" alt="" width="100%">
-              </div>
-            </v-col>
-            <v-col cols="3">
-              <div class="simulator-box center-content elevation-4">
-                <h3>SIMULATOR</h3>
-              </div>
-            </v-col>
-            <v-col cols="3">
-              <div class="http-side message-image">
-                <img src="assets/arrows.jpg" alt="" width="100%">
-              </div>
-            </v-col>
-          </v-row>
-          <v-row align="center" justify="center">
-            <v-col cols="3">
-              <v-textarea id="res-http"
-                          v-model="resHttp"
-                          :label="'4. HTTP Response:'"
-                          :placeholder="' '"
-                          outlined
-                          clearable/>
-            </v-col>
-            <v-col cols="3">
-              <div class="center-content">
-                <v-btn v-on:click="sendDataToBackend">SAVE</v-btn>
-              </div>
-            </v-col>
-            <v-col cols="3">
-              <v-textarea id="res-tcp"
-                          v-model="resTcp"
-                          :label="'3. TCP Response:'"
-                          :placeholder="' '"
-                          outlined
-                          clearable
-                          readonly/>
-            </v-col>
-          </v-row>
+          <v-form>
+            <v-row justify="center">
+              <v-col cols="4">
+                <v-row justify="center">
+                  <v-text-field v-model="form.httpPath"
+                                :hint="'/path'"
+                                :label="'HTTP Route:'"
+                                :rules="[v => !!v || 'Path is required']"
+                                required/>
+                </v-row>
+                <v-row justify="center">
+                  <v-select v-model="form.httpMethod"
+                            :items="httpMethods"
+                            label="HTTP Method:"
+                            :rules="[v => !!v || 'Method is required']"
+                            required>
+                  </v-select>
+                </v-row>
+              </v-col>
+              <v-col cols="1"/>
+              <v-col cols="4">
+                <v-text-field v-model="form.tcpUrl"
+                              :hint="'server:port'"
+                              :label="'TCP URL:'"
+                              :rules="[v => !!v || 'TCP URL is required']"
+                              required/>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="3">
+                <v-textarea id="http-req"
+                            v-model="form.reqHttp"
+                            :label="'1. HTTP Request:'"
+                            :placeholder="' '"
+                            outlined
+                            clearable
+                            readonly/>
+              </v-col>
+              <v-col cols="3">
+              </v-col>
+              <v-col cols="3">
+                <v-textarea id="req-tcp"
+                            v-model="form.reqTcp"
+                            :label="'2. TCP Request:'"
+                            :placeholder="' '"
+                            outlined
+                            clearable/>
+              </v-col>
+            </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="3">
+                <div class="http-side message-image">
+                  <img src="assets/arrows.jpg" alt="" width="100%">
+                </div>
+              </v-col>
+              <v-col cols="3">
+                <div class="simulator-box center-content elevation-4">
+                  <h3>SIMULATOR</h3>
+                </div>
+              </v-col>
+              <v-col cols="3">
+                <div class="http-side message-image">
+                  <img src="assets/arrows.jpg" alt="" width="100%">
+                </div>
+              </v-col>
+            </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="3">
+                <v-textarea id="res-http"
+                            v-model="form.resHttp"
+                            :label="'4. HTTP Response:'"
+                            :placeholder="' '"
+                            outlined
+                            clearable/>
+              </v-col>
+              <v-col cols="3">
+                <div class="center-content">
+                  <v-btn v-on:click="sendDataToBackend">SAVE</v-btn>
+                </div>
+              </v-col>
+              <v-col cols="3">
+                <v-textarea id="res-tcp"
+                            v-model="form.resTcp"
+                            :label="'3. TCP Response:'"
+                            :placeholder="' '"
+                            outlined
+                            clearable
+                            readonly/>
+              </v-col>
+            </v-row>
+          </v-form>
         </v-container>
       </v-main>
       </v-app>

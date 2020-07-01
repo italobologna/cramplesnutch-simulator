@@ -10,7 +10,7 @@ const router = new Router();
 
 router.get("/api", getRoute);
 router.post("/api", postRoute);
-router.delete("/api/:route", deleteRoute);
+router.delete("/api", deleteRoute);
 
 const app = new Application();
 app.use(router.routes());
