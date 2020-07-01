@@ -20,15 +20,6 @@
       resize: none;
     }
 
-    .centralized {
-      margin: 5em auto;
-      width: 80%;
-      height: 80%;
-      display: grid;
-      grid-template-rows: 1fr 1fr 1fr;
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
     .simulator-box {
       margin: 1em;
       height: 80%;
@@ -57,6 +48,7 @@
         httpMethods: ['GET', 'POST', 'PUT', 'DELETE'],
         routes: {},
         deletingRoute: undefined,
+        selectedRoute: undefined,
         form: {
           httpPath: '',
           httpMethod: '',
@@ -66,7 +58,6 @@
           reqTcp: '',
           resTcp: '',
         }
-
       };
     },
     computed: {
@@ -99,14 +90,34 @@
             .then(data => this.routes = data)
             .then(() => this.deletingRoute = undefined)
             .catch(err => console.error(err));
+      },
+      newRoute() {
+        this.$refs.form.reset()
+        this.form.httpPath = '';
+        this.form.httpMethod = '';
+        this.form.tcpUrl = '';
+        this.form.reqHttp = '';
+        this.form.resHttp = '';
+        this.form.reqTcp = '';
+        this.form.resTcp = '';
+      },
+      selectRoute(routeData) {
+        this.form.httpPath = routeData.httpPath;
+        this.form.httpMethod = routeData.httpMethod;
+        this.form.tcpUrl = routeData.tcpUrl;
+        this.form.reqHttp = routeData.reqHttp;
+        this.form.resHttp = routeData.resHttp
+        this.form.reqTcp = routeData.reqTcp;
+        this.form.resTcp = routeData.resTcp;
       }
     },
     created() {
       fetch('http://localhost:4000/api')
           .then(res => res.json())
           .then(data => this.routes = data);
-console.log(this.routes);
-      this.httpMethod = this.httpMethods[0];
+    },
+    mounted() {
+      this.form.httpMethod = this.httpMethods[0];
     },
     template: `
       <v-app id="simulator">
@@ -144,16 +155,28 @@ console.log(this.routes);
           <v-subheader>ROUTES</v-subheader>
           <v-list-item-group>
             <v-list-item v-for="(routeData) in routes"
-                         :key="routeData.httpPath + '-' + routeData.httpMethod">
+                         :key="routeData.httpPath + '-' + routeData.httpMethod" 
+                         v-on:click.stop="selectRoute(routeData)">
               <v-list-item-content>
                 <v-list-item-title v-text="routeData.httpPath + ':' + routeData.httpMethod"></v-list-item-title>
               </v-list-item-content>
-
               <v-list-item-action>
                 <v-btn icon>
                   <v-icon color="red lighten-1"
                           @click.stop="deletingRoute = routeData">
                     mdi-delete
+                  </v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+            <v-list-item v-on:click.stop="newRoute()">
+              <v-list-item-content>
+                <v-list-item-title v-text="'New Route'"></v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon>
+                  <v-icon color="grey lighten-1">
+                    mdi-plus
                   </v-icon>
                 </v-btn>
               </v-list-item-action>
@@ -169,7 +192,7 @@ console.log(this.routes);
 
       <v-main>
         <v-container fluid>
-          <v-form>
+          <v-form ref="form">
             <v-row justify="center">
               <v-col cols="4">
                 <v-row justify="center">
