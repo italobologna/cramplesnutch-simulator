@@ -33,7 +33,7 @@ export const deleteRoute = async (ctx: any) => {
   let searchIndex = routes.findIndex((route: any) => {
     return route.httpPath === httpPath && route.httpMethod === httpMethod
   });
-  console.log(searchIndex);
+  
   if (searchIndex === -1) {
     ctx.response.status = 404;
     return
