@@ -1,8 +1,21 @@
 # Cramplesnutch Simulator
 
+## Description
+This project sets a user configured accessible HTTP route which will produce a 
+pre-defined user configured response, allowing an optional TCP data exchange between
+this application and an external application.
+
+The usual operation will follow the sequence:
+1. Application listens to an HTTP request on a specified path;
+2. Upon receiving the HTTP request, this application will send 
+a TCP packet to an external application; 
+3. Upon receiving the TCP response packet, 
+the application will respond the HTTP request with the defined response.
+
+
 ## Installation
-This project runs with deno.
-In order to run the project the its necessary to first install Deno on the current system.
+This project runs with Deno. In order to run the project the its necessary to first install 
+Deno on the current system.
 For installing on Windows platforms, the following command might be used:
 
 ```powershell
@@ -29,9 +42,11 @@ By running the application successfully, the following command line information 
 
 ```shell script
 ...
-Listening on port XXXX...
+Listening on port {port}...
 ```
 
 ## Usage
-The application will serve a configuration page on the port 4000 unless defined.
-This page can be viewed by accessing the `http://localhost:4000` on the browser.
+The application will serve a configuration page which all the usage configuration will be made.
+This page can be viewed by accessing the URL `http://localhost:{port}` on the browser. 
+
+By default application runs by default on the port 4000.  
