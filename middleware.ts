@@ -11,7 +11,7 @@ export const messagingMiddleware = (async (ctx: any) => {
       instant: Date.now()
     }
     let body = await ctx.request.body();
-    messageHistory.reqHttp = body.value ? body.value : '';
+    messageHistory.reqHttp = body.value ? JSON.stringify(body.value) : '';
 
     try {
       if (route.tcpUrl && route.tcpPort) {

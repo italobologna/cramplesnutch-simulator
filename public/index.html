@@ -123,7 +123,7 @@
         this.form.httpMethod = message.httpMethod;
         this.form.tcpUrl = message.tcpUrl;
         this.form.tcpPort = message.tcpPort;
-        this.form.reqHttp = message.reqHttp;
+        this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2);
         this.form.resHttp = message.resHttp
         this.form.reqTcp = message.reqTcp;
         this.form.resTcp = message.resTcp;
