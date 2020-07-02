@@ -34,4 +34,4 @@ Listening on port XXXX...
 
 ## Usage
 The application will serve a configuration page on the port 4000 unless defined.
-This page can be accessed by inputting the `http://localhost:4000` on the browser.
+This page can be viewed by accessing the `http://localhost:4000` on the browser.
