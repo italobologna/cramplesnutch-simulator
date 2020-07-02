@@ -183,16 +183,19 @@
         </v-card>
       </v-dialog>
 
-      <v-app-bar :clipped-left="true"
-                 app>
+      <v-app-bar app
+                 clipped-left
+                 clipped-right>
         <v-toolbar-title>HTTP - TCP Simulator</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-switch v-model="$vuetify.theme.dark"
+                  primapry
+                  inset
+                  label="Dark">
+        </v-switch>
       </v-app-bar>
-      
-      <v-navigation-drawer
-          :clipped="true"
-          :permanent="true"
-          app
-          overflow>
+
+      <v-navigation-drawer app overflow clipped permanent>
         <v-list rounded>
           <v-subheader>ROUTES</v-subheader>
           <v-list-item-group>
@@ -227,7 +230,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-navigation-drawer permanent right overflow app>
+      <v-navigation-drawer app overflow clipped permanent right>
         <v-list rounded>
           <v-subheader>HISTORY</v-subheader>
           <v-list-item-group>
@@ -302,7 +305,7 @@
             <v-row align="center" justify="center">
               <v-col cols="3">
                 <div class="http-side message-image">
-                  <img src="assets/arrows.jpg" alt="" width="100%">
+                  <img src="assets/arrows.png" alt="" width="100%">
                 </div>
               </v-col>
               <v-col cols="3">
@@ -312,7 +315,7 @@
               </v-col>
               <v-col cols="3">
                 <div class="http-side message-image">
-                  <img src="assets/arrows.jpg" alt="" width="100%">
+                  <img src="assets/arrows.png" alt="" width="100%">
                 </div>
               </v-col>
             </v-row>
