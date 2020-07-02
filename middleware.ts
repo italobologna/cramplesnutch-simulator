@@ -1,28 +1,29 @@
-import {routes, messageHistoryQueue} from "./apiRoutes.ts";
+import { routes, messageHistoryQueue } from "./apiRoutes.ts";
 
 export const messagingMiddleware = (async (ctx: any) => {
   let route = routes.find((route: any) => {
-    return route.httpPath === ctx.request.url.pathname && route.httpMethod === ctx.request.method;
+    return route.httpPath === ctx.request.url.pathname &&
+      route.httpMethod === ctx.request.method;
   });
 
   if (route) {
     let messageHistory: any = {
       ...route,
-      instant: Date.now()
-    }
+      instant: Date.now(),
+    };
     let body = await ctx.request.body();
-    messageHistory.reqHttp = body.value ? JSON.stringify(body.value) : '';
+    messageHistory.reqHttp = body.value ? JSON.stringify(body.value) : "";
 
     try {
       if (route.tcpUrl && route.tcpPort) {
         const conn = await Deno.connect({
           hostname: route.tcpUrl,
-          port: parseInt(route.tcpPort)
+          port: parseInt(route.tcpPort),
         });
 
         await conn.write(hexStringToByte(route.reqTcp));
 
-        let tcpRes: string = '';
+        let tcpRes: string = "";
         while (true) {
           const buf = new Uint8Array(1024);
           let readBytes = await conn.read(buf);
@@ -36,7 +37,7 @@ export const messagingMiddleware = (async (ctx: any) => {
         conn.close();
         messageHistory.resTcp = tcpRes;
       } else {
-        messageHistory.reqTcp = '';
+        messageHistory.reqTcp = "";
       }
     } catch (e) {
       console.error(e);
@@ -63,13 +64,13 @@ function hexStringToByte(str: string) {
 
 function byteToHexString(uint8arr: Uint8Array) {
   if (!uint8arr) {
-    return '';
+    return "";
   }
 
-  var hexStr = '';
+  var hexStr = "";
   for (var i = 0; i < uint8arr.length; i++) {
     var hex = (uint8arr[i] & 0xff).toString(16);
-    hex = (hex.length === 1) ? '0' + hex : hex;
+    hex = (hex.length === 1) ? "0" + hex : hex;
     hexStr += hex;
   }
 

@@ -1,9 +1,9 @@
-import {helpers} from 'https://deno.land/x/oak/mod.ts'
+import { helpers } from "https://deno.land/x/oak/mod.ts";
 
 export const routes: any = [];
 export const messageHistoryQueue: any = [];
 
-export const getHistory = ({response} : {response: any}) => {
+export const getHistory = ({ response }: { response: any }) => {
   let messages: any = [];
   while (messageHistoryQueue.length > 0) {
     messages.push(messageHistoryQueue.pop());
@@ -12,14 +12,14 @@ export const getHistory = ({response} : {response: any}) => {
   response.status = 200;
 };
 
-export const getRoutes = ({response}: { response: any }) => {
+export const getRoutes = ({ response }: { response: any }) => {
   response.body = JSON.stringify(routes);
   response.status = 200;
 };
 
 // @ts-ignore
 export const postRoute = async (
-    {request, response}: { request: any; response: any },
+  { request, response }: { request: any; response: any },
 ) => {
   let body = await request.body();
   let data = JSON.parse(body.value);
@@ -30,7 +30,7 @@ export const postRoute = async (
 };
 
 export const deleteRoute = async (ctx: any) => {
-  let queryParams = helpers.getQuery(ctx, {mergeParams: true});
+  let queryParams = helpers.getQuery(ctx, { mergeParams: true });
 
   let httpPath = queryParams.httpPath;
   let httpMethod = queryParams.httpMethod;
@@ -41,12 +41,12 @@ export const deleteRoute = async (ctx: any) => {
   }
 
   let searchIndex = routes.findIndex((route: any) => {
-    return route.httpPath === httpPath && route.httpMethod === httpMethod
+    return route.httpPath === httpPath && route.httpMethod === httpMethod;
   });
-  
+
   if (searchIndex === -1) {
     ctx.response.status = 404;
-    return
+    return;
   }
   routes.splice(searchIndex, 1);
 
