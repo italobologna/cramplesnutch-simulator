@@ -26,7 +26,6 @@ export const messagingMiddleware = (async (ctx: any) => {
         while (true) {
           const buf = new Uint8Array(1024);
           let readBytes = await conn.read(buf);
-          console.log(readBytes);
           if (readBytes && readBytes > 0) {
             tcpRes += byteToHexString(buf).substr(0, readBytes * 2);
           }

@@ -130,9 +130,7 @@
       },
       selectHistory(message) {
         this.readOnly = true;
-        console.log(message);
         this.fillForm(message);
-        console.log('form', this.form);
       },
       updateHistoryMessages() {
         fetch('/api/history')
