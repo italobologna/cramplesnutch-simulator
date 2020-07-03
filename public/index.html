@@ -39,13 +39,12 @@
 <body>
 <div id="app"></div>
 <script>
-
   new Vue({
     el: `#app`,
     vuetify: new Vuetify(),
     data() {
       return {
-        httpMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+        httpMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         routes: {},
         deletingRoute: undefined,
         selectedRoute: undefined,
@@ -70,7 +69,7 @@
       },
       formatInstant() {
         return (message) => {
-          return new Date(message.instant).toLocaleTimeString();
+          return new Date(message.instant).toLocaleTimeString() + ' - ' + message.httpPath;
         }
       }
     },
