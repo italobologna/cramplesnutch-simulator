@@ -50,3 +50,7 @@ The application will serve a configuration page which all the usage configuratio
 This page can be viewed by accessing the URL `http://localhost:{port}` on the browser. 
 
 By default application runs by default on the port 4000.  
+
+## Screenshot
+
+![image info](./simulator-image.png)
