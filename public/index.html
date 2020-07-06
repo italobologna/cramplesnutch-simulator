@@ -160,7 +160,9 @@
 
       <v-dialog v-if="hasDeleteRoute" v-model="hasDeleteRoute" max-width="290">
         <v-card>
-          <v-card-title class="headline">Delete route '{{ deletingRoute.route }}'</v-card-title>
+          <v-card-title class="headline">
+            Delete route '{{ deletingRoute.httpPath }} : {{ deletingRoute.httpMethod }}'
+          </v-card-title>
 
           <v-card-actions>
             <v-spacer></v-spacer>
