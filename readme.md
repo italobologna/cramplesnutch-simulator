@@ -52,7 +52,7 @@ In case necessary, or in another operating system, the following command might
 be used on the project root folder in order to run the application.
 
 ```shell script
-deno run --allow-net --allow-env --allow-run --allow-read app.ts
+deno run --allow-net --allow-env --allow-run --allow-read --reload app.ts
 ``` 
 
 By running the application successfully, the following command line information will be displayed.
