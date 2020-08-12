@@ -54,6 +54,7 @@
         form: {
           httpPath: '',
           httpMethod: '',
+          httpResCode: 200,
           tcpUrl: '',
           tcpPort: '',
           reqHttp: '',
@@ -80,6 +81,7 @@
           body: JSON.stringify({
             httpPath: this.form.httpPath,
             httpMethod: this.form.httpMethod,
+            httpResCode: this.form.httpResCode,
             tcpUrl: this.form.tcpUrl,
             tcpPort: this.form.tcpPort,
             reqHttp: this.form.reqHttp,
@@ -105,6 +107,7 @@
         this.$refs.form.reset();
         this.form.httpPath = '';
         this.form.httpMethod = '';
+        this.form.httpResCode = 200;
         this.form.tcpUrl = '';
         this.form.tcpPort = '';
         this.form.reqHttp = '';
@@ -120,6 +123,7 @@
         this.$refs.form.resetValidation();
         this.form.httpPath = message.httpPath;
         this.form.httpMethod = message.httpMethod;
+        this.form.httpResCode = message.httpResCode;
         this.form.tcpUrl = message.tcpUrl;
         this.form.tcpPort = message.tcpPort;
         this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2);
@@ -260,12 +264,27 @@
                                 required/>
                 </v-row>
                 <v-row justify="center">
-                  <v-select v-model="form.httpMethod"
-                            :items="httpMethods"
-                            label="HTTP Method:"
-                            :rules="[v => !!v || 'Method is required']"
-                            required>
-                  </v-select>
+                  <v-row>
+                    <v-col cols="6">
+                      <v-select v-model="form.httpMethod"
+                                :items="httpMethods"
+                                label="HTTP Method:"
+                                :rules="[v => !!v || 'Method is required']"
+                                required>
+                      </v-select>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-text-field v-model="form.httpResCode"
+                                    type="number"
+                                    label="HTTP Response Code:"
+                                    :rules="[
+                                        v => !!v || 'Response Code is required',
+                                        v => v >= 100 || 'Should be bigger than 100',
+                                        v => v <= 599 || 'Should be smaller than 599']"
+                                    required>
+                      </v-text-field>
+                    </v-col>
+                  </v-row>
                 </v-row>
               </v-col>
               <v-col cols="1"/>
