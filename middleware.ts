@@ -45,7 +45,6 @@ export const messagingMiddleware = (async (ctx: any) => {
 
     messageHistoryQueue.push(messageHistory);
     ctx.response.body = route.resHttp;
-    console.log(route);
     ctx.response.status = parseInt(route.httpResCode) || 200;
   }
 });
