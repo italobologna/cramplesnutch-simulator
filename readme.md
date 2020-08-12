@@ -38,6 +38,12 @@ deno --version
 
 The installed version should be above the version 1.2.0
 
+If necessary, it is possible to update the version with the following command:
+
+```powershell
+deno upgrade --version 1.2.3
+```
+
 ## Running
 The application can be run with the run.bat command on Windows platforms.
 This script will run the Deno application with the proper necessary configurations.
