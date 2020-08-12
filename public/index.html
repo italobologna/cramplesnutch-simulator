@@ -124,15 +124,20 @@
         this.form.httpPath = message.httpPath;
         this.form.httpMethod = message.httpMethod;
         this.form.httpResCode = message.httpResCode;
-        this.form.tcpUrl = message.tcpUrl;
-        this.form.tcpPort = message.tcpPort;
-        this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2);
-        this.form.resHttp = message.resHttp
-        this.form.reqTcp = message.reqTcp;
-        this.form.resTcp = message.resTcp;
+        this.form.tcpUrl = message.tcpUrl || '';
+        this.form.tcpPort = message.tcpPort || '';
+        try {
+          this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2) || '';
+        } catch (e) {
+          this.form.resHttp = message.reqHttp;
+        }
+        this.form.resHttp = message.resHttp || '';
+        this.form.reqTcp = message.reqTcp || '';
+        this.form.resTcp = message.resTcp || '';
       },
       selectHistory(message) {
         this.readOnly = true;
+        console.log(message);
         this.fillForm(message);
       },
       updateHistoryMessages() {
