@@ -55,6 +55,7 @@
           httpPath: '',
           httpMethod: '',
           httpResCode: 200,
+          httpResContentType: '',
           tcpUrl: '',
           tcpPort: '',
           reqHttp: '',
@@ -79,15 +80,7 @@
         fetch('/api', {
           method: 'POST',
           body: JSON.stringify({
-            httpPath: this.form.httpPath,
-            httpMethod: this.form.httpMethod,
-            httpResCode: this.form.httpResCode,
-            tcpUrl: this.form.tcpUrl,
-            tcpPort: this.form.tcpPort,
-            reqHttp: this.form.reqHttp,
-            resHttp: this.form.resHttp,
-            reqTcp: this.form.reqTcp,
-            resTcp: this.form.resTcp
+            ...this.form
           })
         })
             .then(res => res.json())
@@ -104,10 +97,12 @@
       },
       newRoute() {
         this.readOnly = false;
-        this.$refs.form.reset();
+        this.$refs.form.resetValidation();
+
         this.form.httpPath = '';
-        this.form.httpMethod = '';
+        this.form.httpMethod = 'GET';
         this.form.httpResCode = 200;
+        this.form.httpResContentType = '';
         this.form.tcpUrl = '';
         this.form.tcpPort = '';
         this.form.reqHttp = '';
@@ -124,6 +119,7 @@
         this.form.httpPath = message.httpPath;
         this.form.httpMethod = message.httpMethod;
         this.form.httpResCode = message.httpResCode;
+        this.form.httpResContentType = message.httpResContentType;
         this.form.tcpUrl = message.tcpUrl || '';
         this.form.tcpPort = message.tcpPort || '';
         try {
@@ -153,7 +149,10 @@
     created() {
       fetch('/api')
           .then(res => res.json())
-          .then(data => this.routes = data);
+          .then(data => {
+            if (data.length) this.routes = data;
+          });
+
       this.fetchRoutine = setInterval(this.updateHistoryMessages, 2500);
     },
     mounted() {
@@ -261,34 +260,40 @@
             <v-row justify="center">
               <v-col cols="4">
                 <v-row justify="center">
-                  <v-text-field v-model="form.httpPath"
-                                :hint="'/path'"
-                                :label="'HTTP Route:'"
-                                :rules="[v => !!v || 'Path is required']"
-                                required/>
+                  <v-col cols="6">
+                    <v-text-field v-model="form.httpPath"
+                                  :hint="'/path'"
+                                  :label="'HTTP Route*:'"
+                                  :rules="[v => !!v || 'Path is required']"
+                                  required/>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-select v-model="form.httpMethod"
+                              :items="httpMethods"
+                              label="HTTP Method*:"
+                              :rules="[v => !!v || 'Method is required']"
+                              required>
+                    </v-select>
+                  </v-col>
                 </v-row>
                 <v-row justify="center">
-                  <v-row>
-                    <v-col cols="6">
-                      <v-select v-model="form.httpMethod"
-                                :items="httpMethods"
-                                label="HTTP Method:"
-                                :rules="[v => !!v || 'Method is required']"
-                                required>
-                      </v-select>
-                    </v-col>
-                    <v-col cols="6">
-                      <v-text-field v-model="form.httpResCode"
-                                    type="number"
-                                    label="HTTP Response Code:"
-                                    :rules="[
+                  <v-col cols="6">
+                    <v-text-field v-model="form.httpResCode"
+                                  type="number"
+                                  label="HTTP Response Code*:"
+                                  :rules="[
                                         v => !!v || 'Response Code is required',
                                         v => v >= 100 || 'Should be bigger than 100',
                                         v => v <= 599 || 'Should be smaller than 599']"
-                                    required>
-                      </v-text-field>
-                    </v-col>
-                  </v-row>
+                                  required>
+                    </v-text-field>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field v-model="form.httpResContentType"
+                                  label="HTTP Response Type:"
+                                  required>
+                    </v-text-field>
+                  </v-col>
                 </v-row>
               </v-col>
               <v-col cols="1"/>

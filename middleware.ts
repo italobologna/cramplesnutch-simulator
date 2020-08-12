@@ -45,6 +45,9 @@ export const messagingMiddleware = (async (ctx: any) => {
 
     messageHistoryQueue.push(messageHistory);
     ctx.response.body = route.resHttp;
+    if (route.httpResContentType) {
+      ctx.response.headers.set("content-type", route.httpResContentType);
+    }
     ctx.response.status = parseInt(route.httpResCode) || 200;
   }
 });
