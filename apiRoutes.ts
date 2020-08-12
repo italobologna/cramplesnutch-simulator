@@ -22,10 +22,10 @@ export const postRoute = async (
   { request, response }: { request: any; response: any },
 ) => {
   let body = await request.body();
-  let data = JSON.parse(body.value);
-  routes.push(data);
+  let json = await body.value;
+  routes.push(JSON.parse(json));
 
-  response.body = JSON.stringify(routes);
+  response.body = routes;
   response.status = 200;
 };
 

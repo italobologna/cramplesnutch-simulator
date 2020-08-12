@@ -1,4 +1,4 @@
-import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router, send } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { deleteRoute, getHistory, getRoutes, postRoute } from "./apiRoutes.ts";
 import { messagingMiddleware } from "./middleware.ts";
 
