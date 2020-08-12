@@ -1,4 +1,4 @@
-import { helpers } from "https://deno.land/x/oak/mod.ts";
+import { helpers } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 
 export const routes: any = [];
 export const messageHistoryQueue: any = [];
