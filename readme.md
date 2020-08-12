@@ -27,6 +27,17 @@ iwr https://deno.land/x/install/install.ps1 -useb | iex
 More information about its installation, or installations on other systems can be found 
 [here](https://deno.land/x/install/).
 
+### Deno version
+
+After installing the deno on the local computer, please verify the version installed 
+using the command:
+
+```powershell
+deno --version
+```
+
+The installed version should be above the version 1.2.0
+
 ## Running
 The application can be run with the run.bat command on Windows platforms.
 This script will run the Deno application with the proper necessary configurations.
