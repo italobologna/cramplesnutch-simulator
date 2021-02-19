@@ -1,6 +1,7 @@
-import { routes, messageHistoryQueue } from "./apiRoutes.ts";
+import { Context } from "https://deno.land/x/oak@v6.0.1/context.ts";
+import { messageHistoryQueue, routes } from "./routes.ts";
 
-export const messagingMiddleware = (async (ctx: any) => {
+export const messagingMiddleware = (async (ctx: Context) : Promise<void> => {
   let route = routes.find((route: any) => {
     return route.httpPath === ctx.request.url.pathname &&
       route.httpMethod === ctx.request.method;
