@@ -117,7 +117,19 @@
       },
       selectRoute(routeData) {
         this.readOnly = false;
+        this.form.reqHttp = '';
+        this.form.resTcp = '';
         this.fillForm(routeData);
+      },
+      selectHistory(journey) {
+        this.readOnly = true;
+        try {
+          this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2) || '';
+        } catch (e) {
+          this.form.reqHttp = journey.reqHttp || '';
+        }
+        this.form.resTcp = message.resTcp || '';
+        this.fillForm(journey.itinerary);
       },
       fillForm(message) {
         this.$refs.form.resetValidation();
@@ -127,18 +139,8 @@
         this.form.httpResContentType = message.httpResContentType;
         this.form.tcpUrl = message.tcpUrl || '';
         this.form.tcpPort = message.tcpPort || '';
-        try {
-          this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2) || '';
-        } catch (e) {
-          this.form.resHttp = message.reqHttp;
-        }
         this.form.resHttp = message.resHttp || '';
         this.form.reqTcp = message.reqTcp || '';
-        this.form.resTcp = message.resTcp || '';
-      },
-      selectHistory(message) {
-        this.readOnly = true;
-        this.fillForm(message);
       },
       updateHistoryMessages() {
         fetch('/api/history')
@@ -249,7 +251,7 @@
           <v-list-item-group>
             <v-list-item v-for="(journey) in historyMsgs"
                          :key="journey.instant"
-                         v-on:click.stop="selectHistory(journey.itinerary)">
+                         v-on:click.stop="selectHistory(journey)">
               <v-list-item-content>
                 <v-list-item-title v-text="formatJourney(journey)"></v-list-item-title>
               </v-list-item-content>
