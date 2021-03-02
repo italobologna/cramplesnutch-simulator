@@ -24,10 +24,10 @@ export class HandleJourneyUseCase implements UseCase {
       return;
     }
 
-    const journey = new Journey(itinerary, Date.now());
-    journey.itinerary.reqHttp = await HandleJourneyUseCase
+    const reqHttp = await HandleJourneyUseCase
       .getRequestBodyAsString(ctx.request.body());
-
+      
+    let tcpRes;
     try {
       if (itinerary.tcpUrl && itinerary.tcpPort) {
         const conn = await Deno.connect({
@@ -39,7 +39,7 @@ export class HandleJourneyUseCase implements UseCase {
           HandleJourneyUseCase.hexStringToByte(itinerary.reqTcp),
         );
 
-        let tcpRes = "";
+        tcpRes = "";
         while (true) {
           const buf = new Uint8Array(1024);
           const readBytes = await conn.read(buf);
@@ -54,14 +54,13 @@ export class HandleJourneyUseCase implements UseCase {
           }
         }
         conn.close();
-        journey.itinerary.resTcp = tcpRes;
-      } else {
-        journey.itinerary.reqTcp = "";
       }
     } catch (e) {
       console.error(e);
+      return Promise.reject();
     }
 
+    const journey = new Journey(itinerary, Date.now(), reqHttp, tcpRes);
     await this.journeyRepository.addJourney(journey);
     ctx.response.body = itinerary.resHttp;
     if (itinerary.httpResContentType) {
