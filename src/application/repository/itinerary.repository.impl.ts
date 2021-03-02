@@ -1,4 +1,4 @@
-import { ItineraryRepository } from "../../domain/itinerary/itinerary.repository.ts";
+import { ItineraryRepository } from "../../domain/model/itinerary.repository.ts";
 import { Itinerary } from "../../domain/model/itinerary.ts";
 
 export class ItineraryRepositoryImpl extends ItineraryRepository {
@@ -14,13 +14,13 @@ export class ItineraryRepositoryImpl extends ItineraryRepository {
     return Promise.resolve(itineraries);
   }
 
-  addItinerary(itinerary: Itinerary): Promise<Number> {
+  addItinerary(itinerary: Itinerary): Promise<number> {
     const length = this.itineraries.push(itinerary);
     return Promise.resolve(length);
   }
 
   deleteItinerary(itineraryToDelete: Itinerary): Promise<boolean> {
-    let searchIndex = this.itineraries.findIndex((itinerary) =>
+    const searchIndex = this.itineraries.findIndex((itinerary) =>
       itinerary.httpPath == itineraryToDelete.httpPath &&
       itinerary.httpMethod == itineraryToDelete.httpMethod
     );

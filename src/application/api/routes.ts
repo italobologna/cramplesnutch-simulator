@@ -1,16 +1,16 @@
-import { helpers } from "https://deno.land/x/oak@v6.0.1/mod.ts";
+// import { helpers } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 
-export const routes: any = [];
-export const messageHistoryQueue: any = [];
+// export const routes: any = [];
+// export const messageHistoryQueue: any = [];
 
-export const getHistory = ({ response }: { response: any }) => {
-  let messages: any = [];
-  while (messageHistoryQueue.length > 0) {
-    messages.push(messageHistoryQueue.pop());
-  }
-  response.body = JSON.stringify(messages);
-  response.status = 200;
-};
+// export const getHistory = ({ response }: { response: any }) => {
+//   let messages: any = [];
+//   while (messageHistoryQueue.length > 0) {
+//     messages.push(messageHistoryQueue.pop());
+//   }
+//   response.body = JSON.stringify(messages);
+//   response.status = 200;
+// };
 
 // export const getRoute = ({ response }: { response: any }) => {
 //   response.body = JSON.stringify(routes);

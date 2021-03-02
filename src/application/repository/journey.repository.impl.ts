@@ -10,12 +10,12 @@ export class JourneyRepositoryImpl extends JourneyRepository {
   }
 
   popAll(): Promise<Journey[]> {
-    let journeysToReturn = this.journeys.splice(0).reverse();
+    const journeysToReturn = this.journeys.splice(0).reverse();
     return Promise.resolve(journeysToReturn);
-  };
+  }
 
   addJourney(journey: Journey): Promise<void> {
     this.journeys.push(journey);
     return Promise.resolve();
-  };
+  }
 }

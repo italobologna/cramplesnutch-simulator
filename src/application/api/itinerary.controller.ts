@@ -9,7 +9,7 @@ import { Itinerary } from "../../domain/model/itinerary.ts";
 import { AddItineraryUseCase } from "../../domain/usecases/add.itinerary.ts";
 import { DeleteItinerariesUseCase } from "../../domain/usecases/delete.itinerary.ts";
 import { ListItinerariesUseCase } from "../../domain/usecases/list.itinerary.ts";
-import { getHistory } from "./routes.ts";
+import { RetrieveJourneysUseCase } from "../../domain/usecases/retrieve.journeys.ts";
 
 export class ItineraryController {
   private readonly router: Router;
@@ -18,12 +18,13 @@ export class ItineraryController {
     private readonly addItineraryUseCase: AddItineraryUseCase,
     private readonly listItinerariesUseCase: ListItinerariesUseCase,
     private readonly deleteItinerariesUseCase: DeleteItinerariesUseCase,
+    private readonly retrieveJourneysUseCase: RetrieveJourneysUseCase,
   ) {
     this.router = new Router();
     this.router.get("/api", this.getRoute());
     this.router.post("/api", this.postRoute());
     this.router.delete("/api", this.deleteRoute());
-    this.router.get("/api/history", getHistory);
+    this.router.get("/api/history", this.getJourneyHistory());
   }
 
   routes() {
@@ -49,20 +50,9 @@ export class ItineraryController {
     return async (
       { request, response }: { request: Request; response: Response },
     ) => {
-      let body = await request.body().value;
+      const body = await request.body().value;
       const object = JSON.parse(body);
-
-      const itinerary = new Itinerary();
-      itinerary.httpMethod = object.httpMethod;
-      itinerary.httpPath = object.httpPath;
-      itinerary.httpResCode = object.httpResCode;
-      itinerary.httpResContentType = object.httpResContentType;
-      itinerary.reqHttp = object.reqHttp;
-      itinerary.reqTcp = object.reqTcp;
-      itinerary.resHttp = object.resHttp;
-      itinerary.resTcp = object.resTcp;
-      itinerary.tcpPort = object.tcpPort;
-      itinerary.tcpUrl = object.tcpUrl;
+      const itinerary = Object.assign(new Itinerary(), object);
 
       await this.addItineraryUseCase.execute(itinerary)
         .then(() => this.listItinerariesUseCase.execute())
@@ -79,10 +69,10 @@ export class ItineraryController {
 
   private deleteRoute() {
     return async (ctx: Context) => {
-      let queryParams = helpers.getQuery(ctx, { mergeParams: true });
+      const queryParams = helpers.getQuery(ctx, { mergeParams: true });
 
-      let httpPath = queryParams.httpPath;
-      let httpMethod = queryParams.httpMethod;
+      const httpPath = queryParams.httpPath;
+      const httpMethod = queryParams.httpMethod;
 
       if (!httpPath || !httpMethod) {
         ctx.response.status = 400;
@@ -101,7 +91,16 @@ export class ItineraryController {
         }
       } catch (e) {
         console.error(e);
+        ctx.response.status = 500;
       }
+    };
+  }
+
+  private getJourneyHistory() {
+    return async ({ response }: { response: Response }) => {
+      const journeys = await this.retrieveJourneysUseCase.execute();
+      response.body = JSON.stringify(journeys);
+      response.status = 200;
     };
   }
 }

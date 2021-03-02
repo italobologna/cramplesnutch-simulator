@@ -1,5 +1,5 @@
 import { Singleton } from "https://deno.land/x/deninject@1.0.3/decorators.ts";
-import { ItineraryRepository } from "../domain/itinerary/itinerary.repository.ts";
+import { ItineraryRepository } from "../domain/model/itinerary.repository.ts";
 import { JourneyRepository } from "../domain/model/journey.repository.ts";
 import { AddItineraryUseCase } from "../domain/usecases/add.itinerary.ts";
 import { DeleteItinerariesUseCase } from "../domain/usecases/delete.itinerary.ts";

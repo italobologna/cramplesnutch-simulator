@@ -1,4 +1,4 @@
-import { ItineraryRepository } from "../itinerary/itinerary.repository.ts";
+import { ItineraryRepository } from "../model/itinerary.repository.ts";
 import { UseCase } from "../use.case.ts";
 
 export class DeleteItinerariesUseCase implements UseCase {
@@ -10,8 +10,7 @@ export class DeleteItinerariesUseCase implements UseCase {
         itineraries.find((itinerary) =>
           itinerary.httpPath === httpPath && itinerary.httpMethod === httpMethod
         )
-      ).then((itineraryToDelete) => {
-        console.log(itineraryToDelete);
+      ).then(itineraryToDelete => {
         if (itineraryToDelete) {
           return this.repository.deleteItinerary(itineraryToDelete);
         } else {
