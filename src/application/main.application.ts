@@ -1,12 +1,15 @@
-import { Application } from "https://deno.land/x/oak@v6.0.1/mod.ts";
-import { ItineraryController } from "./api/itinerary.controller.ts";
-import { messagingMiddleware } from "./api/middleware.ts";
+import {Application} from "https://deno.land/x/oak@v6.0.1/mod.ts";
+import {ItineraryController} from "./api/itinerary.controller.ts";
+import {JourneyMiddleware} from "./api/journey.middleware.ts";
 
 export class MainApplication {
   private readonly applicationUrls = [/^\/$/, /^\/api/, /^\/assets\//];
   readonly app: Application;
 
-  constructor(itineraryController: ItineraryController) {
+  constructor(
+    itineraryController: ItineraryController,
+    journeyMiddleware: JourneyMiddleware,
+  ) {
     this.app = new Application();
     this.app.use(itineraryController.routes());
     this.app.use(itineraryController.allowedMethods());
@@ -14,7 +17,7 @@ export class MainApplication {
       if (this.pathMatchesApplicationUrls(ctx.request.url.pathname)) {
         await next();
       } else {
-        await messagingMiddleware(ctx);
+        await journeyMiddleware.intercept(ctx);
       }
     });
   }

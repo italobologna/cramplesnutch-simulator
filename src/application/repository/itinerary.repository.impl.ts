@@ -14,6 +14,13 @@ export class ItineraryRepositoryImpl extends ItineraryRepository {
     return Promise.resolve(itineraries);
   }
 
+  findByPathAndMethod(path: string, method: string): Promise<Itinerary | undefined> {
+    return Promise.resolve(this.itineraries.find(itinerary =>
+      itinerary.httpPath === path &&
+      itinerary.httpMethod === method
+    ));
+  }
+
   addItinerary(itinerary: Itinerary): Promise<number> {
     const length = this.itineraries.push(itinerary);
     return Promise.resolve(length);

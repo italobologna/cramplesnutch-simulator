@@ -69,9 +69,14 @@
       hasDeleteRoute() {
         return this.deletingRoute !== undefined
       },
-      formatInstant() {
-        return (message) => {
-          return new Date(message.instant).toLocaleTimeString() + ' - ' + message.httpPath;
+      formatJourney() {
+        return (journey) => {
+          return new Date(journey.timestamp).toLocaleTimeString() + ' - ' + this.formatItinerary(journey.itinerary);
+        }
+      },
+      formatItinerary() {
+        return (itinerary) => {
+          return `${itinerary.httpPath}:${itinerary.httpMethod}`
         }
       }
     },
@@ -211,7 +216,7 @@
                          :key="index"
                          v-on:click.stop="selectRoute(routeData)">
               <v-list-item-content>
-                <v-list-item-title v-text="routeData.httpPath + ':' + routeData.httpMethod"></v-list-item-title>
+                <v-list-item-title v-text="formatItinerary(routeData)"></v-list-item-title>
               </v-list-item-content>
               <v-list-item-action>
                 <v-btn icon>
@@ -246,7 +251,7 @@
                          :key="message.instant"
                          v-on:click.stop="selectHistory(message)">
               <v-list-item-content>
-                <v-list-item-title v-text="formatInstant(message)"></v-list-item-title>
+                <v-list-item-title v-text="formatJourney(message)"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
