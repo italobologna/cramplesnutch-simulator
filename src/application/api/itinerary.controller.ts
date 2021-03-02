@@ -83,7 +83,7 @@ export class ItineraryController {
         const deleted = await this.deleteItinerariesUseCase
           .execute(httpPath, httpMethod);
         if (deleted) {
-          const itineraries = this.listItinerariesUseCase.execute();
+          const itineraries = await this.listItinerariesUseCase.execute();
           ctx.response.body = JSON.stringify(itineraries);
           ctx.response.status = 200;
         } else {
