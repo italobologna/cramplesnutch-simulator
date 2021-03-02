@@ -3,7 +3,7 @@ import { ItineraryRepository } from "../domain/model/itinerary.repository.ts";
 import { JourneyRepository } from "../domain/model/journey.repository.ts";
 import { AddItineraryUseCase } from "../domain/usecases/add.itinerary.ts";
 import { DeleteItinerariesUseCase } from "../domain/usecases/delete.itinerary.ts";
-import { HandleJourneyUseCase } from "../domain/usecases/handle.itineary.ts";
+import { HandleJourneyUseCase } from "../domain/usecases/handle.journey.ts";
 import { ListItinerariesUseCase } from "../domain/usecases/list.itinerary.ts";
 import { RetrieveJourneysUseCase } from "../domain/usecases/retrieve.journeys.ts";
 import { ItineraryController } from "./api/itinerary.controller.ts";

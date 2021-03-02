@@ -1,4 +1,4 @@
-import { Context } from "https://deno.land/x/oak@v6.0.1/mod.ts";
+import { Body, Context } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { ItineraryRepository } from "./../model/itinerary.repository.ts";
 import { Journey } from "./../model/journey.ts";
 import { JourneyRepository } from "../model/journey.repository.ts";
@@ -24,9 +24,9 @@ export class HandleJourneyUseCase implements UseCase {
       return;
     }
 
-    const journey = new Journey(itinerary, Date.now())
-    const body = ctx.request.body();
-    journey.itinerary.reqHttp = body.value ? JSON.stringify(body.value) : "";
+    const journey = new Journey(itinerary, Date.now());
+    journey.itinerary.reqHttp = await HandleJourneyUseCase
+      .getRequestBodyAsString(ctx.request.body());
 
     try {
       if (itinerary.tcpUrl && itinerary.tcpPort) {
@@ -35,14 +35,19 @@ export class HandleJourneyUseCase implements UseCase {
           port: parseInt(itinerary.tcpPort),
         });
 
-        await conn.write(HandleJourneyUseCase.hexStringToByte(itinerary.reqTcp));
+        await conn.write(
+          HandleJourneyUseCase.hexStringToByte(itinerary.reqTcp),
+        );
 
         let tcpRes = "";
         while (true) {
           const buf = new Uint8Array(1024);
           const readBytes = await conn.read(buf);
           if (readBytes && readBytes > 0) {
-            tcpRes += HandleJourneyUseCase.byteToHexString(buf).substr(0, readBytes * 2);
+            tcpRes += HandleJourneyUseCase.byteToHexString(buf).substr(
+              0,
+              readBytes * 2,
+            );
           }
           if (!readBytes || readBytes < 1024) {
             break;
@@ -91,5 +96,14 @@ export class HandleJourneyUseCase implements UseCase {
     }
 
     return hexStr.toUpperCase();
+  }
+
+  private static async getRequestBodyAsString(body: Body): Promise<string> {
+    if (body.value) {
+      const jsonObj = await body.value;
+      return JSON.stringify(jsonObj);
+    } else {
+      return "";
+    }
   }
 }

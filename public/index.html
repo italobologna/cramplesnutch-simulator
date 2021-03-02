@@ -247,11 +247,11 @@
         <v-list rounded>
           <v-subheader>HISTORY</v-subheader>
           <v-list-item-group>
-            <v-list-item v-for="(message) in historyMsgs"
-                         :key="message.instant"
-                         v-on:click.stop="selectHistory(message)">
+            <v-list-item v-for="(journey) in historyMsgs"
+                         :key="journey.instant"
+                         v-on:click.stop="selectHistory(journey.itinerary)">
               <v-list-item-content>
-                <v-list-item-title v-text="formatJourney(message)"></v-list-item-title>
+                <v-list-item-title v-text="formatJourney(journey)"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
