@@ -1,41 +1,14 @@
-import { Application, Router, send } from "https://deno.land/x/oak@v6.0.1/mod.ts";
-import { deleteRoute, getHistory, getRoutes, postRoute } from "./apiRoutes.ts";
-import { messagingMiddleware } from "./middleware.ts";
+import { Injector } from "https://deno.land/x/deninject@1.0.3/mod.ts";
+import { send } from "https://deno.land/x/oak@v6.0.1/mod.ts";
+import { MainApplication } from "./src/application/main.application.ts";
+import { MainModule } from "./src/application/main.module.ts";
 
 const env = Deno.env.toObject();
 const PORT = env.PORT || 4000;
 const HOST = env.HOST || "127.0.0.1";
 
-const router = new Router();
-
-router.get("/api", getRoutes);
-router.post("/api", postRoute);
-router.delete("/api", deleteRoute);
-router.get("/api/history", getHistory);
-
-const app = new Application();
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-const applicationUrls = [/^\/$/, /^\/api/, /^\/assets\//];
-let unlessApplication = async (
-  interceptor: any,
-): Promise<(ctx: any, next: any) => Promise<any>> => {
-  return async (ctx: any, next: () => Promise<void>) => {
-    if (
-      applicationUrls.some((path) =>
-        new RegExp(path).test(ctx.request.url.pathname)
-      )
-    ) {
-      await next();
-      return;
-    } else {
-      return await interceptor(ctx);
-    }
-  };
-};
-
-app.use(await unlessApplication(messagingMiddleware));
+const injector = new Injector(new MainModule());
+const app = injector.get(MainApplication).app;
 
 app.use(async (context) => {
   await send(context, context.request.url.pathname, {
@@ -44,5 +17,5 @@ app.use(async (context) => {
   });
 });
 
-console.log(`Listening on port ${PORT}...`);
+console.info(`Listening on port ${PORT}...`);
 await app.listen(`${HOST}:${PORT}`);

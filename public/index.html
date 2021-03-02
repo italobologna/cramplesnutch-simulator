@@ -69,9 +69,14 @@
       hasDeleteRoute() {
         return this.deletingRoute !== undefined
       },
-      formatInstant() {
-        return (message) => {
-          return new Date(message.instant).toLocaleTimeString() + ' - ' + message.httpPath;
+      formatJourney() {
+        return (journey) => {
+          return new Date(journey.timestamp).toLocaleTimeString() + ' - ' + this.formatItinerary(journey.itinerary);
+        }
+      },
+      formatItinerary() {
+        return (itinerary) => {
+          return `${itinerary.httpPath}:${itinerary.httpMethod}`
         }
       }
     },
@@ -112,7 +117,19 @@
       },
       selectRoute(routeData) {
         this.readOnly = false;
+        this.form.reqHttp = '';
+        this.form.resTcp = '';
         this.fillForm(routeData);
+      },
+      selectHistory(journey) {
+        this.readOnly = true;
+        try {
+          this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2) || '';
+        } catch (e) {
+          this.form.reqHttp = journey.reqHttp || '';
+        }
+        this.form.resTcp = message.resTcp || '';
+        this.fillForm(journey.itinerary);
       },
       fillForm(message) {
         this.$refs.form.resetValidation();
@@ -122,18 +139,8 @@
         this.form.httpResContentType = message.httpResContentType;
         this.form.tcpUrl = message.tcpUrl || '';
         this.form.tcpPort = message.tcpPort || '';
-        try {
-          this.form.reqHttp = JSON.stringify(JSON.parse(message.reqHttp), null, 2) || '';
-        } catch (e) {
-          this.form.resHttp = message.reqHttp;
-        }
         this.form.resHttp = message.resHttp || '';
         this.form.reqTcp = message.reqTcp || '';
-        this.form.resTcp = message.resTcp || '';
-      },
-      selectHistory(message) {
-        this.readOnly = true;
-        this.fillForm(message);
       },
       updateHistoryMessages() {
         fetch('/api/history')
@@ -211,7 +218,7 @@
                          :key="index"
                          v-on:click.stop="selectRoute(routeData)">
               <v-list-item-content>
-                <v-list-item-title v-text="routeData.httpPath + ':' + routeData.httpMethod"></v-list-item-title>
+                <v-list-item-title v-text="formatItinerary(routeData)"></v-list-item-title>
               </v-list-item-content>
               <v-list-item-action>
                 <v-btn icon>
@@ -242,11 +249,11 @@
         <v-list rounded>
           <v-subheader>HISTORY</v-subheader>
           <v-list-item-group>
-            <v-list-item v-for="(message) in historyMsgs"
-                         :key="message.instant"
-                         v-on:click.stop="selectHistory(message)">
+            <v-list-item v-for="(journey) in historyMsgs"
+                         :key="journey.instant"
+                         v-on:click.stop="selectHistory(journey)">
               <v-list-item-content>
-                <v-list-item-title v-text="formatInstant(message)"></v-list-item-title>
+                <v-list-item-title v-text="formatJourney(journey)"></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -301,7 +308,7 @@
                 <v-row justify="center">
                   <v-text-field v-model="form.tcpUrl"
                                 :hint="'server'"
-                                :label="'TCP URL:'"
+                                :label="'TCP Host:'"
                                 required/>
                 </v-row>
                 <v-row justify="center">
