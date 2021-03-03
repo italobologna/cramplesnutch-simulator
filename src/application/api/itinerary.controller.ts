@@ -75,7 +75,6 @@ export class ItineraryController {
       { request, response }: { request: Request; response: Response },
     ) => {
       const body = await request.body().value;
-      console.log(body);
       const arr = JSON.parse(body);
       if (!Array.isArray(arr)) {
         response.status = 400;
