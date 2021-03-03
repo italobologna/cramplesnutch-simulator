@@ -1,6 +1,7 @@
 import { Singleton } from "https://deno.land/x/deninject@1.0.3/decorators.ts";
 import { ItineraryRepository } from "../domain/model/itinerary.repository.ts";
 import { JourneyRepository } from "../domain/model/journey.repository.ts";
+import { AddAllItinerariesUseCase } from "../domain/usecases/add.all.itineraries.ts";
 import { AddItineraryUseCase } from "../domain/usecases/add.itinerary.ts";
 import { DeleteItinerariesUseCase } from "../domain/usecases/delete.itinerary.ts";
 import { HandleJourneyUseCase } from "../domain/usecases/handle.journey.ts";
@@ -16,7 +17,7 @@ export class MainModule {
   @Singleton()
   public buildMainApplication(
     itineraryController: ItineraryController,
-    journeyMiddleware: JourneyMiddleware
+    journeyMiddleware: JourneyMiddleware,
   ): MainApplication {
     return new MainApplication(itineraryController, journeyMiddleware);
   }
@@ -29,12 +30,14 @@ export class MainModule {
     listItinerariesUseCase: ListItinerariesUseCase,
     deleteItinerariesUseCase: DeleteItinerariesUseCase,
     retrieveJourneysUseCase: RetrieveJourneysUseCase,
+    addAllItinerariesUseCase: AddAllItinerariesUseCase,
   ): ItineraryController {
     return new ItineraryController(
       addItineraryUseCase,
       listItinerariesUseCase,
       deleteItinerariesUseCase,
       retrieveJourneysUseCase,
+      addAllItinerariesUseCase,
     );
   }
 
@@ -81,6 +84,13 @@ export class MainModule {
     journeyRepository: JourneyRepository,
   ): HandleJourneyUseCase {
     return new HandleJourneyUseCase(itineraryRepository, journeyRepository);
+  }
+
+  @Singleton()
+  public buildAddAllItinerariesUseCase(
+    itineraryRepository: ItineraryRepository,
+  ): AddAllItinerariesUseCase {
+    return new AddAllItinerariesUseCase(itineraryRepository);
   }
 
   // --- Repositories ---

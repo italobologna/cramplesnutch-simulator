@@ -81,6 +81,14 @@
       }
     },
     methods: {
+      postAllItineraries(itineraries) {
+        fetch('/api', {
+          method: 'PUT',
+          body: itineraries
+        }).then(res => res.json())
+            .then(data => this.routes = data)
+            .catch(console.error);
+      },
       sendDataToBackend() {
         fetch('/api', {
           method: 'POST',
@@ -151,6 +159,41 @@
               }
             })
             .catch(err => console.error(err));
+      },
+      download(filename, text) {
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+      },
+      triggerFileInput() {
+        const input = document.getElementById("file-form-input");
+        input.click();
+      },
+      uploadFile(fileList) {
+        const file = fileList[0];
+        const reader = new FileReader();
+        reader.onload = r => {
+          try {
+            const text = r.target.result;
+            if (file.name.endsWith('json')) {
+              this.postAllItineraries(text);
+            } else {
+              alert('Unsupported file type');
+              return;
+            }
+            alert('New file uploaded with sucess');
+          } catch (e) {
+            alert('Failed to upload file: ' + e);
+          }
+        };
+        reader.readAsText(file);
       }
     },
     created() {
@@ -212,6 +255,32 @@
 
       <v-navigation-drawer app overflow clipped permanent>
         <v-list rounded>
+          <v-subheader>OPTIONS</v-subheader>
+          <v-list-item-group>
+            <v-list-item v-on:click.stop="triggerFileInput()">
+              <input id="file-form-input"
+                     style="display: none"
+                     name="tc-file"
+                     type="file"
+                     accept="application/json"
+                     v-on:change="uploadFile($event.target.files)">
+              <v-list-item-content>
+                <v-list-item-title v-text="'Import'"></v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-icon>
+                <v-icon color="grey lighten-1" dense>mdi-application-import</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+            <v-list-item v-on:click.stop="download('routes.json', JSON.stringify(routes))">
+              <v-list-item-content>
+                <v-list-item-title v-text="'Export'"></v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-icon>
+                <v-icon color="grey lighten-1" dense>mdi-application-export</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+          </v-list-item-group>
+
           <v-subheader>ROUTES</v-subheader>
           <v-list-item-group>
             <v-list-item v-for="(routeData, index) in routes"
