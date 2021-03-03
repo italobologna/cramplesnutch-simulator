@@ -44,6 +44,7 @@
     vuetify: new Vuetify(),
     data() {
       return {
+        overlay: false,
         httpMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         routes: {},
         deletingRoute: undefined,
@@ -177,6 +178,7 @@
         input.click();
       },
       uploadFile(fileList) {
+        this.overlay = true;
         const file = fileList[0];
         const reader = new FileReader();
         reader.onload = r => {
@@ -191,6 +193,8 @@
             alert('New file uploaded with sucess');
           } catch (e) {
             alert('Failed to upload file: ' + e);
+          } finally {
+            this.overlay = false;
           }
         };
         reader.readAsText(file);
@@ -241,6 +245,21 @@
         </v-card>
       </v-dialog>
 
+      <v-overlay
+          :opacity="0.5"
+          :value="overlay"
+      >
+        <div class="text-center">
+          <v-progress-circular
+              indeterminate
+              color="blue"
+              :size="70"
+              :width="7"
+          ></v-progress-circular>
+        </div>
+      </v-overlay>
+      
+
       <v-app-bar app
                  clipped-left
                  clipped-right>
@@ -252,7 +271,7 @@
                   label="Dark">
         </v-switch>
       </v-app-bar>
-
+      
       <v-navigation-drawer app overflow clipped permanent stateless>
 
         <v-subheader>OPTIONS</v-subheader>
