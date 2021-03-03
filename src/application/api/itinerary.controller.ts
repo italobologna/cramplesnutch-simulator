@@ -6,6 +6,7 @@ import {
   Router,
 } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { Itinerary } from "../../domain/model/itinerary.ts";
+import { AddAllItinerariesUseCase } from "../../domain/usecases/add.all.itineraries.ts";
 import { AddItineraryUseCase } from "../../domain/usecases/add.itinerary.ts";
 import { DeleteItinerariesUseCase } from "../../domain/usecases/delete.itinerary.ts";
 import { ListItinerariesUseCase } from "../../domain/usecases/list.itinerary.ts";
@@ -19,10 +20,12 @@ export class ItineraryController {
     private readonly listItinerariesUseCase: ListItinerariesUseCase,
     private readonly deleteItinerariesUseCase: DeleteItinerariesUseCase,
     private readonly retrieveJourneysUseCase: RetrieveJourneysUseCase,
+    private readonly addAllItinerariesUseCase: AddAllItinerariesUseCase,
   ) {
     this.router = new Router();
     this.router.get("/api", this.getRoute());
     this.router.post("/api", this.postRoute());
+    this.router.put("/api", this.putRoute());
     this.router.delete("/api", this.deleteRoute());
     this.router.get("/api/history", this.getJourneyHistory());
   }
@@ -61,6 +64,35 @@ export class ItineraryController {
           response.body = itineraries;
           response.status = 200;
         }).catch((e) => {
+          console.error(e);
+          response.status = 500;
+        });
+    };
+  }
+
+  private putRoute() {
+    return async (
+      { request, response }: { request: Request; response: Response },
+    ) => {
+      const body = await request.body().value;
+      console.log(body);
+      const arr = JSON.parse(body);
+      if (!Array.isArray(arr)) {
+        response.status = 400;
+        return;
+      }
+
+      const itineraries: Itinerary[] = arr.map((itineraryObj) =>
+        Object.assign(new Itinerary(), itineraryObj)
+      );
+
+      await this.addAllItinerariesUseCase.execute(itineraries)
+        .then(() => this.listItinerariesUseCase.execute())
+        .then(JSON.stringify)
+        .then((itineraries) => {
+          response.body = itineraries;
+          response.status = 200;
+        }).catch(e => {
           console.error(e);
           response.status = 500;
         });
