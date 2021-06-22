@@ -1,1 +1,1 @@
-deno run --allow-net --allow-env --allow-run --allow-read --reload app.ts
+deno run --allow-net --allow-env --allow-run --allow-read --reload --config ./tsconfig.json app.ts
