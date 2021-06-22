@@ -38,12 +38,12 @@ installed using the command:
 deno --version
 ```
 
-The installed version should be above the version 1.2.0
+The installed version should be above the version 1.9.0
 
 If necessary, it is possible to update the version with the following command:
 
 ```powershell
-deno upgrade --version 1.2.3
+deno upgrade --version 1.9.2
 ```
 
 ## Running
