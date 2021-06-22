@@ -1,4 +1,4 @@
-import { Injector } from "https://deno.land/x/deninject@1.0.3/mod.ts";
+import { Injector } from "https://deno.land/x/deninject@1.0.4/mod.ts";
 import { send } from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { MainApplication } from "./src/application/main.application.ts";
 import { MainModule } from "./src/application/main.module.ts";
